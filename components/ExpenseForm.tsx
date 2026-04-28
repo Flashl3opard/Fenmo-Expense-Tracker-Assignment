@@ -76,9 +76,9 @@ export default function ExpenseForm({ onCreated }: ExpenseFormProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
       onSubmit={submit}
-      className="panel relative overflow-hidden"
+      className="panel relative overflow-hidden ring-1 ring-white/60 dark:ring-white/5"
     >
-      <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-r from-purple-500/20 via-violet-400/10 to-indigo-500/15" />
+      <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-r from-indigo-500/16 via-violet-400/12 to-fuchsia-500/12 dark:from-purple-500/18 dark:via-violet-400/10 dark:to-indigo-500/14" />
       <div className="relative p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -86,11 +86,11 @@ export default function ExpenseForm({ onCreated }: ExpenseFormProps) {
               <Sparkles className="h-3.5 w-3.5" /> Quick entry
             </p>
             <h2 className="mt-2.5 text-2xl font-bold text-slate-950 dark:text-white">Add expense</h2>
-            <p className="mt-2 max-w-md text-sm text-slate-600 dark:text-slate-300">
+            <p className="mt-2 max-w-md text-sm leading-6 text-slate-600 dark:text-slate-300">
               Fast, secure entry with retry-safe protection and smart category suggestions.
             </p>
           </div>
-          <div className="rounded-xl brand-gradient-bg p-2.5 text-white shadow-lg shadow-purple-600/30">
+          <div className="rounded-xl brand-gradient-bg p-2.5 text-white shadow-lg shadow-indigo-600/25 ring-1 ring-white/20">
             <BadgeIndianRupee className="h-5 w-5" />
           </div>
         </div>
@@ -98,7 +98,7 @@ export default function ExpenseForm({ onCreated }: ExpenseFormProps) {
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           <Field label="Amount" icon={<BadgeIndianRupee className="h-4 w-4" />}>
             <div className="relative">
-              <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-500 dark:text-slate-400">₹</span>
+              <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-600 dark:text-slate-300">&#8377;</span>
               <input
                 type="number"
                 step="0.01"
@@ -124,7 +124,7 @@ export default function ExpenseForm({ onCreated }: ExpenseFormProps) {
                   key={category}
                   type="button"
                   onClick={() => form.setValue('category', category, { shouldValidate: true })}
-                  className="rounded-lg border border-slate-200/60 bg-gradient-to-r from-slate-50 to-slate-50/60 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-purple-300/50 hover:from-purple-50 hover:to-purple-50/50 hover:text-purple-700 dark:border-white/10 dark:from-white/5 dark:to-white/5 dark:text-slate-300 dark:hover:border-purple-400/30 dark:hover:from-white/10 dark:hover:to-white/8 dark:hover:text-purple-300"
+                  className="rounded-lg border border-violet-200/70 bg-gradient-to-r from-white to-violet-50/50 px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition hover:border-violet-300/80 hover:from-violet-50 hover:to-white hover:text-violet-800 dark:border-white/10 dark:from-white/7 dark:to-white/5 dark:text-slate-200 dark:hover:border-purple-400/35 dark:hover:from-white/12 dark:hover:to-white/8 dark:hover:text-purple-200"
                 >
                   {category}
                 </button>
@@ -173,7 +173,7 @@ function Field({
 }) {
   return (
     <label className={full ? 'sm:col-span-2' : ''}>
-      <span className="mb-1.5 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+      <span className="mb-1.5 flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-200">
         {icon}
         {label}
       </span>

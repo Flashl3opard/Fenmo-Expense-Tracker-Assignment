@@ -146,14 +146,15 @@ export default function Page() {
   const monthTotal = monthlySeries[monthlySeries.length - 1]?.amount ?? 0
 
   return (
-    <main id="top" className="bottom-safe-area min-h-screen px-4 py-4 sm:px-6 lg:px-8">
+    <main id="top" className="bottom-safe-area min-h-screen px-4 py-4 text-slate-900 sm:px-6 lg:px-8 dark:text-slate-100">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
-        <motion.header {...cardMotion} className="panel relative overflow-hidden p-5 sm:p-8">
-          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-r from-purple-500/15 via-violet-400/10 to-indigo-500/15" />
+        <motion.header {...cardMotion} className="panel relative overflow-hidden p-5 ring-1 ring-white/70 sm:p-8 dark:ring-white/5">
+          <div className="absolute inset-x-0 top-0 h-36 bg-gradient-to-r from-indigo-500/18 via-violet-400/12 to-fuchsia-500/14 dark:from-purple-500/18 dark:via-violet-400/10 dark:to-indigo-500/14" />
+          <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-violet-300/60 to-transparent dark:via-violet-400/20" />
           <div className="relative space-y-6">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex items-start gap-4">
-                <div className="rounded-2xl brand-gradient-bg p-3 text-white shadow-xl shadow-purple-600/30">
+                <div className="rounded-2xl brand-gradient-bg p-3 text-white shadow-xl shadow-indigo-600/25 ring-1 ring-white/25">
                   <Wallet2 className="h-6 w-6" />
                 </div>
                 <div className="max-w-2xl">
@@ -168,7 +169,7 @@ export default function Page() {
               </div>
 
               <div className="flex flex-wrap items-center gap-3 lg:justify-end">
-                <nav aria-label="Primary sections" className="hidden rounded-full border border-slate-200/70 bg-white/80 px-2 py-2 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/8 lg:flex">
+                <nav aria-label="Primary sections" className="hidden rounded-full border border-violet-200/70 bg-white/88 px-2 py-2 shadow-[0_12px_30px_rgba(60,45,120,0.10)] backdrop-blur-xl dark:border-white/12 dark:bg-white/8 lg:flex">
                   <div className="flex items-center gap-1">
                     {sectionNavItems.map((item) => {
                       const Icon = item.icon
@@ -176,7 +177,7 @@ export default function Page() {
                         <a
                           key={item.label}
                           href={item.href}
-                          className="inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-xs font-semibold text-slate-600 transition hover:bg-purple-50 hover:text-purple-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/60 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+                          className="inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-xs font-bold text-slate-700 transition hover:bg-violet-50 hover:text-violet-800 focus:outline-none dark:text-slate-200 dark:hover:bg-white/12 dark:hover:text-white"
                         >
                           <Icon className="h-3.5 w-3.5" />
                           {item.label}
@@ -192,8 +193,8 @@ export default function Page() {
 
             <div className="grid gap-3 sm:grid-cols-3">
               <MiniMetric label="Visible total" value={formatINR(totalAmount)} icon={LayoutDashboard} accent="from-violet-700 via-purple-600 to-indigo-700" />
-              <MiniMetric label="This month" value={formatINR(monthTotal)} icon={CalendarDays} accent="from-purple-600 via-pink-500 to-red-600" />
-              <MiniMetric label="Top category" value={topCategory?.name ?? '—'} icon={TrendingUp} accent="from-indigo-600 via-purple-500 to-violet-600" />
+              <MiniMetric label="This month" value={formatINR(monthTotal)} icon={CalendarDays} accent="from-indigo-600 via-violet-600 to-fuchsia-600" />
+              <MiniMetric label="Top category" value={topCategory?.name ?? 'None'} icon={TrendingUp} accent="from-slate-800 via-indigo-700 to-violet-700" />
             </div>
           </div>
         </motion.header>
@@ -214,7 +215,7 @@ export default function Page() {
                 <h2 id="expense-form-heading" className="mt-2 text-xl font-bold text-slate-950 dark:text-white sm:text-2xl">
                   Add expense
                 </h2>
-                <p className="mt-1 max-w-2xl text-sm text-slate-700 dark:text-slate-400">
+                <p className="mt-1 max-w-2xl text-sm text-slate-600 dark:text-slate-300">
                   Enter the amount first. The form stays above the fold and is the main action on the page.
                 </p>
               </div>
@@ -259,7 +260,7 @@ export default function Page() {
                     <Wallet2 className="h-3.5 w-3.5" /> Page map
                   </p>
                   <h2 className="mt-2 text-lg font-bold text-slate-950 dark:text-white">Jump to a section</h2>
-                  <p className="mt-1 text-xs text-slate-700 dark:text-slate-400">Quick access without crowding the main flow.</p>
+                  <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">Quick access without crowding the main flow.</p>
                 </div>
               </div>
 
@@ -270,10 +271,10 @@ export default function Page() {
                     <a
                       key={item.label}
                       href={item.href}
-                      className="group flex items-center justify-between rounded-2xl border border-slate-200/70 bg-gradient-to-r from-white to-slate-50/70 px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-purple-300/50 hover:text-purple-700 dark:border-white/10 dark:from-white/5 dark:to-white/5 dark:text-slate-200 dark:hover:border-purple-400/30 dark:hover:text-white"
+                      className="group flex items-center justify-between rounded-xl border border-violet-200/60 bg-gradient-to-r from-white to-violet-50/45 px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-violet-300/80 hover:text-violet-800 hover:shadow-md dark:border-white/10 dark:from-white/7 dark:to-white/5 dark:text-slate-200 dark:hover:border-purple-400/35 dark:hover:text-white"
                     >
                       <span className="inline-flex items-center gap-3">
-                        <span className="rounded-xl bg-purple-600/10 p-2 text-purple-600 group-hover:bg-purple-600/20 dark:bg-purple-400/10 dark:text-purple-300">
+                        <span className="rounded-lg bg-violet-600/10 p-2 text-violet-700 group-hover:bg-violet-600/18 dark:bg-purple-400/12 dark:text-purple-200">
                           <Icon className="h-4 w-4" />
                         </span>
                         {item.label}
@@ -304,11 +305,11 @@ function MiniMetric({
   accent: string
 }) {
   return (
-    <div className="group rounded-2xl border border-black/8 bg-gradient-to-br from-white to-slate-50/60 p-4 shadow-sm transition hover:shadow-md dark:border-white/12 dark:from-white/8 dark:to-white/5 dark:hover:border-purple-400/20">
-      <div className={`inline-flex rounded-xl bg-gradient-to-br ${accent} p-2 text-white shadow-lg shadow-black/20`}>
+    <div className="group rounded-xl border border-violet-200/60 bg-gradient-to-br from-white to-violet-50/50 p-4 shadow-[0_10px_28px_rgba(53,35,112,0.08)] transition hover:-translate-y-0.5 hover:border-violet-300/70 hover:shadow-[0_16px_34px_rgba(53,35,112,0.12)] dark:border-white/12 dark:from-white/9 dark:to-white/5 dark:hover:border-purple-400/25">
+      <div className={`inline-flex rounded-lg bg-gradient-to-br ${accent} p-2 text-white shadow-lg shadow-black/20 ring-1 ring-white/20`}>
         <Icon className="h-4 w-4" />
       </div>
-      <p className="mt-3 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{label}</p>
+      <p className="mt-3 text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">{label}</p>
       <p className="mt-2 text-xl font-bold tracking-tight text-slate-950 dark:text-white">{value}</p>
     </div>
   )
@@ -316,10 +317,10 @@ function MiniMetric({
 
 function StatTile({ label, value, helper }: { label: string; value: string; helper: string }) {
   return (
-    <div className="group rounded-2xl border border-black/8 bg-gradient-to-br from-white to-slate-50/50 p-4 shadow-sm transition hover:shadow-md dark:border-white/12 dark:from-white/8 dark:to-white/5 dark:hover:border-purple-400/20">
-      <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{label}</p>
-      <p className="mt-3 text-2xl font-bold tracking-tighter text-slate-950 dark:text-white">{value}</p>
-      <p className="mt-2 text-xs text-slate-600 dark:text-slate-400">{helper}</p>
+    <div className="group rounded-xl border border-violet-200/55 bg-gradient-to-br from-white to-violet-50/40 p-4 shadow-[0_10px_28px_rgba(53,35,112,0.08)] transition hover:-translate-y-0.5 hover:border-violet-300/70 hover:shadow-[0_16px_34px_rgba(53,35,112,0.12)] dark:border-white/12 dark:from-white/9 dark:to-white/5 dark:hover:border-purple-400/25">
+      <p className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">{label}</p>
+      <p className="mt-3 text-2xl font-bold tracking-tight text-slate-950 dark:text-white">{value}</p>
+      <p className="mt-2 text-xs font-medium text-slate-600 dark:text-slate-300">{helper}</p>
     </div>
   )
 }

@@ -41,8 +41,8 @@ export default function FloatingNav() {
   }, [])
 
   return (
-    <div className="fixed inset-x-0 bottom-4 z-40 flex justify-center px-4 sm:bottom-6 lg:hidden">
-      <nav className="floating-nav w-full max-w-[480px] px-3 py-2.5" aria-label="Mobile section navigation">
+    <div className="fixed inset-x-0 bottom-3 z-40 flex justify-center px-4 sm:bottom-5 lg:hidden">
+      <nav className="floating-nav w-full max-w-[480px] px-3 py-2" aria-label="Mobile section navigation">
         <div className="grid grid-cols-5 gap-1">
           {items.map((item) => {
             const Icon = item.icon
@@ -54,16 +54,16 @@ export default function FloatingNav() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 aria-current={isActive ? 'page' : undefined}
-                className={`group relative flex flex-col items-center justify-center gap-1 rounded-xl py-2.5 text-[11px] font-semibold transition ${
+                className={`group relative flex flex-col items-center justify-center gap-1 rounded-xl py-2 text-[11px] font-bold transition ${
                   isActive
-                    ? 'text-purple-600 dark:text-purple-300'
-                    : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
+                    ? 'text-violet-800 dark:text-purple-200'
+                    : 'text-slate-600 hover:text-slate-800 dark:text-slate-300 dark:hover:text-white'
                 }`}
               >
                 {isActive && (
                   <motion.div
                     layoutId="activeNav"
-                    className="absolute inset-0 rounded-xl bg-purple-100 dark:bg-white/10"
+                    className="absolute inset-0 rounded-xl bg-violet-100 shadow-sm ring-1 ring-violet-200/70 dark:bg-white/12 dark:ring-white/10"
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}

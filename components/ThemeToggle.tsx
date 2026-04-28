@@ -32,7 +32,7 @@ export default function ThemeToggle() {
       whileTap={{ scale: 0.92 }}
       aria-pressed={isDark}
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-      className="relative inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200/70 bg-gradient-to-r from-slate-50 to-slate-100 text-slate-700 shadow-md transition hover:border-purple-300/50 hover:from-white hover:to-white focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/60 dark:border-white/15 dark:from-white/10 dark:to-white/8 dark:text-slate-200 dark:hover:border-purple-400/30 dark:hover:from-white/15 dark:hover:to-white/12"
+      className="relative inline-flex h-12 w-12 items-center justify-center rounded-full border border-violet-200/70 bg-gradient-to-r from-white to-violet-50 text-slate-800 shadow-[0_10px_24px_rgba(53,35,112,0.12)] transition hover:border-violet-300/80 hover:text-violet-800 hover:shadow-[0_14px_32px_rgba(53,35,112,0.16)] focus:outline-none dark:border-white/15 dark:from-white/12 dark:to-white/8 dark:text-slate-100 dark:hover:border-purple-400/35 dark:hover:from-white/16 dark:hover:to-white/12"
     >
       <motion.div
         initial={false}
