@@ -121,7 +121,7 @@ export default function Page() {
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem('theme')
-    document.documentElement.classList.toggle('dark', savedTheme === 'dark')
+    document.documentElement.classList.toggle('dark', savedTheme !== 'light')
   }, [])
 
   const categories = useMemo(() => {
@@ -187,7 +187,6 @@ export default function Page() {
                   </div>
                 </nav>
 
-                <ThemeToggle />
               </div>
             </div>
 
@@ -288,6 +287,9 @@ export default function Page() {
           </aside>
         </section>
       </div>
+      <div className="fixed right-4 top-4 z-50 sm:right-6 sm:top-6">
+        <ThemeToggle />
+      </div>
       <FloatingNav />
     </main>
   )
@@ -305,7 +307,7 @@ function MiniMetric({
   accent: string
 }) {
   return (
-    <div className="group rounded-xl border border-violet-200/60 bg-gradient-to-br from-white to-violet-50/50 p-4 shadow-[0_10px_28px_rgba(53,35,112,0.08)] transition hover:-translate-y-0.5 hover:border-violet-300/70 hover:shadow-[0_16px_34px_rgba(53,35,112,0.12)] dark:border-white/12 dark:from-white/9 dark:to-white/5 dark:hover:border-purple-400/25">
+    <div className="group rounded-xl border border-violet-200/60 bg-gradient-to-br from-white to-violet-50/50 p-4 shadow-[0_10px_28px_rgba(53,35,112,0.08)] transition duration-200 ease-out hover:-translate-y-1 hover:border-violet-400/80 hover:shadow-[0_22px_46px_rgba(53,35,112,0.18)] dark:border-white/12 dark:from-white/9 dark:to-white/5 dark:hover:border-purple-400/35 dark:hover:shadow-[0_22px_52px_rgba(0,0,0,0.32),0_0_26px_rgba(168,85,247,0.14)]">
       <div className={`inline-flex rounded-lg bg-gradient-to-br ${accent} p-2 text-white shadow-lg shadow-black/20 ring-1 ring-white/20`}>
         <Icon className="h-4 w-4" />
       </div>
@@ -317,7 +319,7 @@ function MiniMetric({
 
 function StatTile({ label, value, helper }: { label: string; value: string; helper: string }) {
   return (
-    <div className="group rounded-xl border border-violet-200/55 bg-gradient-to-br from-white to-violet-50/40 p-4 shadow-[0_10px_28px_rgba(53,35,112,0.08)] transition hover:-translate-y-0.5 hover:border-violet-300/70 hover:shadow-[0_16px_34px_rgba(53,35,112,0.12)] dark:border-white/12 dark:from-white/9 dark:to-white/5 dark:hover:border-purple-400/25">
+    <div className="group rounded-xl border border-violet-200/55 bg-gradient-to-br from-white to-violet-50/40 p-4 shadow-[0_10px_28px_rgba(53,35,112,0.08)] transition duration-200 ease-out hover:-translate-y-1 hover:border-violet-400/80 hover:shadow-[0_22px_46px_rgba(53,35,112,0.18)] dark:border-white/12 dark:from-white/9 dark:to-white/5 dark:hover:border-purple-400/35 dark:hover:shadow-[0_22px_52px_rgba(0,0,0,0.32),0_0_26px_rgba(168,85,247,0.14)]">
       <p className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">{label}</p>
       <p className="mt-3 text-2xl font-bold tracking-tight text-slate-950 dark:text-white">{value}</p>
       <p className="mt-2 text-xs font-medium text-slate-600 dark:text-slate-300">{helper}</p>
