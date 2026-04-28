@@ -1,125 +1,101 @@
 "use client"
 
-import React, { useState } from 'react'
-import ExpenseForm from '../components/ExpenseForm'
-import ExpenseList from '../components/ExpenseList'
-import ExpenseFilters from '../components/ExpenseFilters'
-import ExpenseSummary from '../components/ExpenseSummary'
+import { useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import ExpenseFilters from '@/components/ExpenseFilters'
+import ExpenseForm from '@/components/ExpenseForm'
+import ExpenseList from '@/components/ExpenseList'
+import ExpenseSummary from '@/components/ExpenseSummary'
+
+type Expense = {
+  id: string
+  amount: number
+  category: string
+  description: string
+  date: string
+}
+
+async function fetchExpenses(category: string, sort: 'date_desc') {
+  const params = new URLSearchParams()
+  if (category) params.set('category', category)
+  params.set('sort', sort)
+
+  const response = await fetch(`/api/expenses?${params.toString()}`)
+  if (!response.ok) {
+    throw new Error('Unable to load expenses')
+  }
+
+  return (await response.json()) as Expense[]
+}
 
 export default function Page() {
-  const [category, setCategory] = useState<string | null>(null)
-  const [sort, setSort] = useState<string | null>('date_desc')
-
-  // Fetch visible expenses to compute total
-  const { data: visible = [] } = useQuery(['expenses', category, sort], async () => {
-    const params = new URLSearchParams()
-    if (category) params.set('category', category)
-    if (sort) params.set('sort', sort)
-    const res = await fetch('/api/expenses?' + params.toString())
-    if (!res.ok) throw new Error('Failed')
-    return res.json()
+  const [category, setCategory] = useState('')
+  const [sort, setSort] = useState<'date_desc'>('date_desc')
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    if (typeof window === 'undefined') return 'light'
+    return window.localStorage.getItem('theme') === 'dark' ? 'dark' : 'light'
   })
 
-  const total = (visible || []).reduce((sum: number, e: any) => sum + (e.amount ?? 0), 0)
+  const expensesQuery = useQuery({
+    queryKey: ['expenses', category, sort],
+    queryFn: () => fetchExpenses(category, sort),
+  })
+
+  const allExpensesQuery = useQuery({
+    queryKey: ['expenses', 'all'],
+    queryFn: () => fetchExpenses('', 'date_desc'),
+  })
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark')
+    window.localStorage.setItem('theme', theme)
+  }, [theme])
+
+  const categories = useMemo(() => {
+    const values = allExpensesQuery.data?.map((expense) => expense.category) ?? []
+  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+    () => (expensesQuery.data ?? []).reduce((sum, expense) => sum + expense.amount, 0),
+    [expensesQuery.data]
+  )
 
   return (
-    <div className="min-h-screen p-6 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-      <div className="max-w-4xl mx-auto">
-        <header className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-semibold">Expense Tracker</h1>
-          <ThemeToggle />
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(148,163,184,0.18),_transparent_36%),linear-gradient(to_bottom,_var(--background),_var(--background))] px-4 py-8 text-slate-950 dark:text-white sm:px-6 lg:px-8">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
+        <header className="flex flex-col gap-4 rounded-[2rem] border border-black/5 bg-white/80 px-6 py-5 shadow-sm shadow-black/5 backdrop-blur dark:border-white/10 dark:bg-white/5 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">Personal finance</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight">Expense Tracker</h1>
+    const savedTheme = window.localStorage.getItem('theme') === 'dark' ? 'dark' : 'light'
+    setTheme(savedTheme)
+
+          <button
+            type="button"
+            onClick={() => setTheme((current) => (current === 'dark' ? 'light' : 'dark'))}
+            className="inline-flex items-center justify-center rounded-full border border-black/10 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm shadow-black/5 transition hover:bg-slate-50 dark:border-white/10 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+          >
+            {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+          </button>
         </header>
 
-        <section className="grid md:grid-cols-2 gap-4 mb-6">
+        <section className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
           <ExpenseForm />
-          <ExpenseSummary totalCents={total} />
+          <ExpenseSummary totalAmount={totalAmount} itemCount={expensesQuery.data?.length ?? 0} />
         </section>
 
-        <section className="mb-4 flex items-center justify-between">
-          <ExpenseFilters selectedCategory={category} setSelectedCategory={setCategory} sort={sort} setSort={setSort} />
-        </section>
-
-        <ExpenseList category={category ?? undefined} sort={sort ?? undefined} />
-      </div>
-    </div>
-  )
-}
-
-function ThemeToggle() {
-  const [mode, setMode] = useState<'light' | 'dark'>(() => (typeof window !== 'undefined' && localStorage.getItem('theme') === 'dark' ? 'dark' : 'light'))
-  React.useEffect(() => {
-    document.documentElement.classList.toggle('dark', mode === 'dark')
-    localStorage.setItem('theme', mode)
-  }, [mode])
-  return (
-    <button onClick={() => setMode((m) => (m === 'dark' ? 'light' : 'dark'))} className="px-3 py-1 border rounded">
-      {mode === 'dark' ? '🌙 Dark' : '☀️ Light'}
-    </button>
-  )
-}
-import Image from "next/image";
-
-export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+        <ExpenseFilters
+          categories={categories}
+          category={category}
+          onCategoryChange={setCategory}
+          sort={sort}
+          onSortChange={setSort}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+
+        <ExpenseList
+          expenses={expensesQuery.data ?? []}
+          isLoading={expensesQuery.isLoading}
+          isError={expensesQuery.isError}
+        />
+      </div>
+    </main>
+  )
 }
