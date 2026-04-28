@@ -7,9 +7,12 @@ import { useQuery } from '@tanstack/react-query'
 import {
   ArrowRight,
   CalendarDays,
+  Download,
+  FileText,
   LayoutDashboard,
   Home,
   Plus,
+  Printer,
   Sparkles,
   TrendingUp,
   Wallet2,
@@ -144,10 +147,23 @@ export default function Page() {
   const monthlySeries = useMemo(() => buildMonthlySeries(allExpenses), [allExpenses])
   const categorySeries = useMemo(() => buildCategorySeries(visibleExpenses), [visibleExpenses])
   const monthTotal = monthlySeries[monthlySeries.length - 1]?.amount ?? 0
+  const statementDate = useMemo(
+    () =>
+      new Intl.DateTimeFormat('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      }).format(new Date()),
+    []
+  )
+
+  const printStatement = () => {
+    window.print()
+  }
 
   return (
     <main id="top" className="bottom-safe-area min-h-screen px-4 py-4 text-slate-900 sm:px-6 lg:px-8 dark:text-slate-100">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
+      <div className="app-shell mx-auto flex w-full max-w-7xl flex-col gap-8">
         <motion.header {...cardMotion} className="panel relative overflow-hidden p-5 ring-1 ring-white/70 sm:p-8 dark:ring-white/5">
           <div className="absolute inset-x-0 top-0 h-36 bg-gradient-to-r from-indigo-500/18 via-violet-400/12 to-fuchsia-500/14 dark:from-purple-500/18 dark:via-violet-400/10 dark:to-indigo-500/14" />
           <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-violet-300/60 to-transparent dark:via-violet-400/20" />
@@ -158,32 +174,42 @@ export default function Page() {
                   <Wallet2 className="h-6 w-6" />
                 </div>
                 <div className="max-w-2xl">
-                  <p className="section-kicker">Expense control center</p>
+                  <p className="section-kicker">Fenmo</p>
                   <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-4xl">
-                    Premium Expense Tracker
+                     Expense Tracker App
                   </h1>
                   <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-700 dark:text-slate-300 sm:text-base">
-                    Add spending instantly, scan key metrics early, and move through the dashboard with a cleaner finance-app workflow.
+                    Track expenses effortlessly, monitor spending insights in real time, and manage your finances through a refined, premium dashboard experience.
+
                   </p>
                 </div>
               </div>
 
               <div className="flex flex-wrap items-center gap-3 lg:justify-end">
-                <nav aria-label="Primary sections" className="hidden rounded-full border border-violet-200/70 bg-white/88 px-2 py-2 shadow-[0_12px_30px_rgba(60,45,120,0.10)] backdrop-blur-xl dark:border-white/12 dark:bg-white/8 lg:flex">
-                  <div className="flex items-center gap-1">
+                <nav aria-label="Primary sections" className="hidden rounded-2xl border border-violet-200/70 bg-white/90 p-2 shadow-[0_16px_38px_rgba(60,45,120,0.12)] backdrop-blur-xl dark:border-white/12 dark:bg-white/8 lg:flex">
+                  <div className="flex items-center gap-1.5">
                     {sectionNavItems.map((item) => {
                       const Icon = item.icon
                       return (
                         <a
                           key={item.label}
                           href={item.href}
-                          className="inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-xs font-bold text-slate-700 transition hover:bg-violet-50 hover:text-violet-800 focus:outline-none dark:text-slate-200 dark:hover:bg-white/12 dark:hover:text-white"
+                          className="group inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-700 transition duration-200 hover:-translate-y-0.5 hover:bg-violet-50 hover:text-violet-800 hover:shadow-sm focus:outline-none dark:text-slate-200 dark:hover:bg-white/12 dark:hover:text-white"
                         >
-                          <Icon className="h-3.5 w-3.5" />
+                          <Icon className="h-3.5 w-3.5 transition group-hover:scale-110" />
                           {item.label}
                         </a>
                       )
                     })}
+                    <span className="mx-1 h-7 w-px bg-violet-200/80 dark:bg-white/12" aria-hidden="true" />
+                    <button
+                      type="button"
+                      onClick={printStatement}
+                      className="group inline-flex items-center gap-2 rounded-xl bg-slate-950 px-3.5 py-2 text-xs font-bold text-white shadow-[0_10px_24px_rgba(15,23,42,0.22)] transition duration-200 hover:-translate-y-0.5 hover:bg-violet-700 hover:shadow-[0_14px_32px_rgba(109,40,217,0.34)] focus:outline-none dark:bg-white dark:text-slate-950 dark:hover:bg-purple-100"
+                    >
+                      <Printer className="h-3.5 w-3.5 transition group-hover:scale-110" />
+                      Statement
+                    </button>
                   </div>
                 </nav>
 
@@ -264,6 +290,19 @@ export default function Page() {
               </div>
 
               <div className="mt-4 grid gap-2">
+                <button
+                  type="button"
+                  onClick={printStatement}
+                  className="group flex items-center justify-between rounded-xl border border-violet-300/70 bg-slate-950 px-4 py-3 text-sm font-bold text-white shadow-[0_14px_30px_rgba(15,23,42,0.2)] transition hover:-translate-y-0.5 hover:bg-violet-700 hover:shadow-[0_18px_38px_rgba(109,40,217,0.28)] dark:border-white/15 dark:bg-white dark:text-slate-950 dark:hover:bg-purple-100"
+                >
+                  <span className="inline-flex items-center gap-3">
+                    <span className="rounded-lg bg-white/12 p-2 text-white dark:bg-slate-950/10 dark:text-slate-950">
+                      <Download className="h-4 w-4" />
+                    </span>
+                    Print statement
+                  </span>
+                  <FileText className="h-4 w-4 opacity-80 transition group-hover:translate-x-0.5" />
+                </button>
                 {sectionNavItems.map((item) => {
                   const Icon = item.icon
                   return (
@@ -287,11 +326,93 @@ export default function Page() {
           </aside>
         </section>
       </div>
-      <div className="fixed right-4 top-4 z-50 sm:right-6 sm:top-6">
+      <PrintableStatement
+        expenses={visibleExpenses}
+        totalAmount={totalAmount}
+        totalCount={totalCount}
+        averageTicket={averageTicket}
+        topCategory={topCategory?.name ?? 'None'}
+        statementDate={statementDate}
+      />
+      <div className="theme-toggle-wrap fixed right-4 top-4 z-50 sm:right-6 sm:top-6">
         <ThemeToggle />
       </div>
       <FloatingNav />
     </main>
+  )
+}
+
+function PrintableStatement({
+  expenses,
+  totalAmount,
+  totalCount,
+  averageTicket,
+  topCategory,
+  statementDate,
+}: {
+  expenses: Expense[]
+  totalAmount: number
+  totalCount: number
+  averageTicket: number
+  topCategory: string
+  statementDate: string
+}) {
+  return (
+    <section className="print-only" aria-label="Printable expense statement">
+      <div className="statement-sheet">
+        <header className="statement-header">
+          <div>
+            <p className="statement-kicker">Fenmo Expense OS</p>
+            <h1>Expense Statement</h1>
+            <p>Generated on {statementDate}</p>
+          </div>
+          <div className="statement-logo">₹</div>
+        </header>
+
+        <div className="statement-grid">
+          <StatementMetric label="Visible total" value={formatINR(totalAmount)} />
+          <StatementMetric label="Transactions" value={String(totalCount)} />
+          <StatementMetric label="Average ticket" value={formatINR(averageTicket)} />
+          <StatementMetric label="Top category" value={topCategory} />
+        </div>
+
+        <table className="statement-table">
+          <thead>
+            <tr>
+              <th>Amount</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {expenses.length > 0 ? (
+              expenses.map((expense) => (
+                <tr key={expense.id}>
+                  <td>{formatINR(expense.amount)}</td>
+                  <td>{expense.category}</td>
+                  <td>{expense.description}</td>
+                  <td>{new Intl.DateTimeFormat('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(expense.date))}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={4}>No expenses available for this statement.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  )
+}
+
+function StatementMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <p>{label}</p>
+      <strong>{value}</strong>
+    </div>
   )
 }
 

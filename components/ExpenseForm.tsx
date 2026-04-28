@@ -1,13 +1,13 @@
 "use client"
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { v4 as uuidv4 } from 'uuid'
 import { motion } from 'framer-motion'
-import { ArrowRight, BadgeIndianRupee, CalendarDays, Layers3, Sparkles } from 'lucide-react'
+import { ArrowRight, BadgeIndianRupee, CalendarDays, FileSpreadsheet, Layers3, Sparkles, Upload } from 'lucide-react'
 import { ExpenseCreateSchema } from '@/lib/validations'
 
 type ExpenseFormValues = z.infer<typeof ExpenseCreateSchema>
@@ -18,9 +18,78 @@ type ExpenseFormProps = {
 
 const suggestedCategories = ['Food', 'Transport', 'Shopping', 'Bills', 'Subscriptions', 'Travel']
 
+function parseCsvLine(line: string) {
+  const cells: string[] = []
+  let value = ''
+  let inQuotes = false
+
+  for (let index = 0; index < line.length; index += 1) {
+    const character = line[index]
+    const nextCharacter = line[index + 1]
+
+    if (character === '"' && nextCharacter === '"') {
+      value += '"'
+      index += 1
+    } else if (character === '"') {
+      inQuotes = !inQuotes
+    } else if (character === ',' && !inQuotes) {
+      cells.push(value.trim())
+      value = ''
+    } else {
+      value += character
+    }
+  }
+
+  cells.push(value.trim())
+  return cells
+}
+
+function normalizeCsvDate(value: string) {
+  const trimmed = value.trim()
+  if (!trimmed) return ''
+
+  const parsed = new Date(trimmed)
+  if (!Number.isNaN(parsed.getTime())) {
+    return parsed.toISOString().slice(0, 10)
+  }
+
+  return trimmed
+}
+
+function parseExpenseCsv(text: string): ExpenseFormValues[] {
+  const lines = text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+
+  if (lines.length === 0) return []
+
+  const firstRow = parseCsvLine(lines[0]).map((cell) => cell.toLowerCase())
+  const hasHeader = ['amount', 'category', 'description', 'date'].some((field) => firstRow.includes(field))
+  const headers = hasHeader ? firstRow : ['amount', 'category', 'description', 'date']
+  const rows = hasHeader ? lines.slice(1) : lines
+
+  return rows.map((line) => {
+    const cells = parseCsvLine(line)
+    const row = new Map(headers.map((header, index) => [header, cells[index] ?? '']))
+    const amount = Number(String(row.get('amount') ?? '').replace(/[₹,\s]/g, ''))
+
+    return {
+      amount,
+      category: row.get('category') ?? '',
+      description: row.get('description') ?? '',
+      date: normalizeCsvDate(row.get('date') ?? ''),
+      idempotencyKey: uuidv4(),
+    }
+  })
+}
+
 export default function ExpenseForm({ onCreated }: ExpenseFormProps) {
   const queryClient = useQueryClient()
   const [idempotencyKey, setIdempotencyKey] = useState<string>(() => uuidv4())
+  const [importStatus, setImportStatus] = useState('')
+  const [isImporting, setIsImporting] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const form = useForm<ExpenseFormValues>({
     resolver: zodResolver(ExpenseCreateSchema),
@@ -69,6 +138,50 @@ export default function ExpenseForm({ onCreated }: ExpenseFormProps) {
       idempotencyKey,
     })
   })
+
+  const importCsv = async (file: File) => {
+    setIsImporting(true)
+    setImportStatus('Reading CSV...')
+
+    try {
+      const rows = parseExpenseCsv(await file.text())
+      if (rows.length === 0) {
+        setImportStatus('No rows found in CSV.')
+        return
+      }
+
+      let imported = 0
+      for (const row of rows) {
+        const parsed = ExpenseCreateSchema.safeParse(row)
+        if (!parsed.success) {
+          throw new Error(`Row ${imported + 1} is invalid. Use amount, category, description, date.`)
+        }
+
+        const response = await fetch('/api/expenses', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(parsed.data),
+        })
+
+        const payload = await response.json()
+        if (!response.ok) {
+          throw new Error(payload?.message || `Unable to import row ${imported + 1}`)
+        }
+
+        imported += 1
+        setImportStatus(`Imported ${imported} of ${rows.length}...`)
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['expenses'] })
+      setImportStatus(`Imported ${imported} expense${imported === 1 ? '' : 's'} from CSV.`)
+      onCreated?.()
+    } catch (error) {
+      setImportStatus(error instanceof Error ? error.message : 'Unable to import CSV.')
+    } finally {
+      setIsImporting(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
 
   return (
     <motion.form
@@ -153,8 +266,32 @@ export default function ExpenseForm({ onCreated }: ExpenseFormProps) {
             {mutation.isPending ? 'Saving...' : 'Save expense'}
             {!mutation.isPending ? <ArrowRight className="h-4 w-4" /> : null}
           </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv,text/csv"
+            className="sr-only"
+            onChange={(event) => {
+              const file = event.target.files?.[0]
+              if (file) void importCsv(file)
+            }}
+          />
+          <button
+            type="button"
+            disabled={isImporting}
+            onClick={() => fileInputRef.current?.click()}
+            className="inline-flex min-w-[180px] items-center justify-center gap-2 rounded-xl border border-violet-200/70 bg-white px-4 py-3 text-sm font-bold text-slate-800 shadow-[0_10px_24px_rgba(53,35,112,0.1)] transition hover:-translate-y-0.5 hover:border-violet-400 hover:text-violet-800 hover:shadow-[0_16px_34px_rgba(53,35,112,0.16)] disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/12 dark:bg-white/10 dark:text-white dark:hover:border-purple-300/40"
+          >
+            {isImporting ? <FileSpreadsheet className="h-4 w-4" /> : <Upload className="h-4 w-4" />}
+            {isImporting ? 'Importing...' : 'Import CSV'}
+          </button>
           {mutation.isError ? <p className="text-sm font-medium text-rose-600 dark:text-rose-400">{mutation.error.message}</p> : null}
         </div>
+        {importStatus ? (
+          <p className="mt-3 text-sm font-semibold text-slate-700 dark:text-slate-200">
+            {importStatus}
+          </p>
+        ) : null}
       </div>
     </motion.form>
   )

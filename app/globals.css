@@ -298,3 +298,132 @@ body {
 .bottom-safe-area {
   padding-bottom: calc(6.25rem + env(safe-area-inset-bottom, 0px));
 }
+
+.print-only {
+  display: none;
+}
+
+.statement-sheet {
+  color: #111827;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 32px;
+}
+
+.statement-header {
+  align-items: flex-start;
+  border-bottom: 2px solid #111827;
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 18px;
+}
+
+.statement-header h1 {
+  font-size: 32px;
+  line-height: 1.1;
+  margin: 6px 0;
+}
+
+.statement-header p {
+  color: #475569;
+  margin: 0;
+}
+
+.statement-kicker {
+  color: #5b21b6 !important;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.statement-logo {
+  align-items: center;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  border-radius: 16px;
+  color: white;
+  display: flex;
+  font-size: 28px;
+  font-weight: 900;
+  height: 56px;
+  justify-content: center;
+  width: 56px;
+}
+
+.statement-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, 1fr);
+  margin: 24px 0;
+}
+
+.statement-grid div {
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.statement-grid p {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
+.statement-grid strong {
+  color: #111827;
+  display: block;
+  font-size: 18px;
+}
+
+.statement-table {
+  border-collapse: collapse;
+  font-size: 12px;
+  width: 100%;
+}
+
+.statement-table th {
+  background: #111827;
+  color: white;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.statement-table th,
+.statement-table td {
+  border: 1px solid #cbd5e1;
+  padding: 10px;
+}
+
+.statement-table td {
+  color: #1f2937;
+}
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  html,
+  body {
+    background: white !important;
+  }
+
+  .app-shell,
+  .theme-toggle-wrap,
+  .floating-nav {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .statement-sheet {
+    padding: 0;
+  }
+}
