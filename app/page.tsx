@@ -25,6 +25,7 @@ import ExpenseList from '@/components/ExpenseList'
 import ExpenseSummary from '@/components/ExpenseSummary'
 import ThemeToggle from '@/components/ThemeToggle'
 import { formatINR } from '@/lib/utils'
+import { fetchLocalExpenses } from '@/lib/localDb'
 
 type Expense = {
   id: string
@@ -63,12 +64,7 @@ async function fetchExpenses(category: string, sort: 'date_desc') {
   if (category) params.set('category', category)
   params.set('sort', sort)
 
-  const response = await fetch(`/api/expenses?${params.toString()}`)
-  if (!response.ok) {
-    throw new Error('Unable to load expenses')
-  }
-
-  return (await response.json()) as Expense[]
+  return fetchLocalExpenses(category, sort)
 }
 
 function buildMonthlySeries(expenses: Expense[]): MonthlyPoint[] {

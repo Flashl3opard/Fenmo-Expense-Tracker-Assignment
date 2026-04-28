@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { motion } from 'framer-motion'
 import { ArrowRight, BadgeIndianRupee, CalendarDays, FileSpreadsheet, Layers3, Sparkles, Upload } from 'lucide-react'
 import { ExpenseCreateSchema } from '@/lib/validations'
+import { createLocalExpense } from '@/lib/localDb'
 
 type ExpenseFormValues = z.infer<typeof ExpenseCreateSchema>
 
@@ -104,18 +105,7 @@ export default function ExpenseForm({ onCreated }: ExpenseFormProps) {
 
   const mutation = useMutation({
     mutationFn: async (values: ExpenseFormValues) => {
-      const response = await fetch('/api/expenses', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values),
-      })
-
-      const payload = await response.json()
-      if (!response.ok) {
-        throw new Error(payload?.message || 'Unable to save expense')
-      }
-
-      return payload
+      return createLocalExpense(values as any)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['expenses'] })
@@ -157,16 +147,7 @@ export default function ExpenseForm({ onCreated }: ExpenseFormProps) {
           throw new Error(`Row ${imported + 1} is invalid. Use amount, category, description, date.`)
         }
 
-        const response = await fetch('/api/expenses', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(parsed.data),
-        })
-
-        const payload = await response.json()
-        if (!response.ok) {
-          throw new Error(payload?.message || `Unable to import row ${imported + 1}`)
-        }
+        await createLocalExpense(parsed.data as any)
 
         imported += 1
         setImportStatus(`Imported ${imported} of ${rows.length}...`)
