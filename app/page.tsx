@@ -31,10 +31,6 @@ async function fetchExpenses(category: string, sort: 'date_desc') {
 export default function Page() {
   const [category, setCategory] = useState('')
   const [sort, setSort] = useState<'date_desc'>('date_desc')
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    if (typeof window === 'undefined') return 'light'
-    return window.localStorage.getItem('theme') === 'dark' ? 'dark' : 'light'
-  })
 
   const expensesQuery = useQuery({
     queryKey: ['expenses', category, sort],
@@ -47,9 +43,9 @@ export default function Page() {
   })
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark')
-    window.localStorage.setItem('theme', theme)
-  }, [theme])
+    const savedTheme = window.localStorage.getItem('theme')
+    document.documentElement.classList.toggle('dark', savedTheme === 'dark')
+  }, [])
 
   const categories = useMemo(() => {
     const values = allExpensesQuery.data?.map((expense) => expense.category) ?? []
@@ -75,10 +71,13 @@ export default function Page() {
 
           <button
             type="button"
-            onClick={() => setTheme((current) => (current === 'dark' ? 'light' : 'dark'))}
+            onClick={() => {
+              const isDark = document.documentElement.classList.toggle('dark')
+              window.localStorage.setItem('theme', isDark ? 'dark' : 'light')
+            }}
             className="inline-flex items-center justify-center rounded-full border border-black/10 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm shadow-black/5 transition hover:bg-slate-50 dark:border-white/10 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
           >
-            {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+            Toggle theme
           </button>
         </header>
 
