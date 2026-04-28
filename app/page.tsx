@@ -53,7 +53,10 @@ export default function Page() {
 
   const categories = useMemo(() => {
     const values = allExpensesQuery.data?.map((expense) => expense.category) ?? []
-  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+    return Array.from(new Set(values)).sort((left, right) => left.localeCompare(right))
+  }, [allExpensesQuery.data])
+
+  const totalAmount = useMemo(
     () => (expensesQuery.data ?? []).reduce((sum, expense) => sum + expense.amount, 0),
     [expensesQuery.data]
   )
@@ -65,8 +68,10 @@ export default function Page() {
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">Personal finance</p>
             <h1 className="mt-2 text-3xl font-semibold tracking-tight">Expense Tracker</h1>
-    const savedTheme = window.localStorage.getItem('theme') === 'dark' ? 'dark' : 'light'
-    setTheme(savedTheme)
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+              Minimal, retry-safe expense tracking with idempotent writes and visible totals.
+            </p>
+          </div>
 
           <button
             type="button"
