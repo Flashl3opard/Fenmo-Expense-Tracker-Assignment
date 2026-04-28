@@ -6,11 +6,10 @@ import { motion } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
 import {
   ArrowRight,
-  ArrowUpRight,
   CalendarDays,
   LayoutDashboard,
+  Home,
   Plus,
-  RefreshCcw,
   Sparkles,
   TrendingUp,
   Wallet2,
@@ -22,6 +21,7 @@ import ExpenseForm from '@/components/ExpenseForm'
 import ExpenseList from '@/components/ExpenseList'
 import ExpenseSummary from '@/components/ExpenseSummary'
 import ThemeToggle from '@/components/ThemeToggle'
+import { formatINR } from '@/lib/utils'
 
 type Expense = {
   id: string
@@ -47,10 +47,12 @@ const cardMotion = {
   transition: { duration: 0.35, ease: 'easeOut' as const },
 }
 
-const quickActions = [
+const sectionNavItems = [
+  { label: 'Home', href: '#top', icon: Home },
   { label: 'Add expense', href: '#expense-form', icon: Plus },
-  { label: 'Jump to analytics', href: '#analytics', icon: TrendingUp },
-  { label: 'Reset filters', href: '#filters', icon: RefreshCcw },
+  { label: 'Metrics', href: '#metrics', icon: LayoutDashboard },
+  { label: 'Analytics', href: '#analytics', icon: TrendingUp },
+  { label: 'List', href: '#list', icon: Wallet2 },
 ]
 
 async function fetchExpenses(category: string, sort: 'date_desc') {
@@ -103,10 +105,6 @@ function buildCategorySeries(expenses: Expense[]): CategoryPoint[] {
     .map(([name, amount]) => ({ name, amount }))
 }
 
-function formatINR(amount: number) {
-  return amount.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })
-}
-
 export default function Page() {
   const [category, setCategory] = useState('')
   const [sort, setSort] = useState<'date_desc'>('date_desc')
@@ -148,12 +146,11 @@ export default function Page() {
   const monthTotal = monthlySeries[monthlySeries.length - 1]?.amount ?? 0
 
   return (
-    <main id="top" className="bottom-safe-area min-h-screen px-4 py-5 sm:px-6 lg:px-8">
+    <main id="top" className="bottom-safe-area min-h-screen px-4 py-4 sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
-        {/* Premium Header */}
         <motion.header {...cardMotion} className="panel relative overflow-hidden p-5 sm:p-8">
           <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-r from-purple-500/15 via-violet-400/10 to-indigo-500/15" />
-          <div className="relative">
+          <div className="relative space-y-6">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex items-start gap-4">
                 <div className="rounded-2xl brand-gradient-bg p-3 text-white shadow-xl shadow-purple-600/30">
@@ -164,18 +161,36 @@ export default function Page() {
                   <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-4xl">
                     Premium Expense Tracker
                   </h1>
-                  <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300 sm:text-base">
-                    Track, analyze, and manage your spending with a fintech-grade dashboard designed for precision and elegance.
+                  <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-700 dark:text-slate-300 sm:text-base">
+                    Add spending instantly, scan key metrics early, and move through the dashboard with a cleaner finance-app workflow.
                   </p>
                 </div>
               </div>
 
-              <div className="flex-shrink-0">
+              <div className="flex flex-wrap items-center gap-3 lg:justify-end">
+                <nav aria-label="Primary sections" className="hidden rounded-full border border-slate-200/70 bg-white/80 px-2 py-2 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/8 lg:flex">
+                  <div className="flex items-center gap-1">
+                    {sectionNavItems.map((item) => {
+                      const Icon = item.icon
+                      return (
+                        <a
+                          key={item.label}
+                          href={item.href}
+                          className="inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-xs font-semibold text-slate-600 transition hover:bg-purple-50 hover:text-purple-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/60 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+                        >
+                          <Icon className="h-3.5 w-3.5" />
+                          {item.label}
+                        </a>
+                      )
+                    })}
+                  </div>
+                </nav>
+
                 <ThemeToggle />
               </div>
             </div>
 
-            <div className="mt-7 grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-3">
               <MiniMetric label="Visible total" value={formatINR(totalAmount)} icon={LayoutDashboard} accent="from-violet-700 via-purple-600 to-indigo-700" />
               <MiniMetric label="This month" value={formatINR(monthTotal)} icon={CalendarDays} accent="from-purple-600 via-pink-500 to-red-600" />
               <MiniMetric label="Top category" value={topCategory?.name ?? '—'} icon={TrendingUp} accent="from-indigo-600 via-purple-500 to-violet-600" />
@@ -183,13 +198,34 @@ export default function Page() {
           </div>
         </motion.header>
 
-        {/* Main Content Grid */}
-        <section className="grid gap-8 xl:grid-cols-[1fr_320px]">
-          <div className="space-y-8">
-            {/* Premium Stats Row */}
-            <motion.div
+        <section className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
+          <div className="space-y-8 min-w-0">
+            <motion.section
               {...cardMotion}
               transition={{ duration: 0.35, ease: 'easeOut', delay: 0.05 }}
+              id="expense-form"
+              aria-labelledby="expense-form-heading"
+              className="space-y-4"
+            >
+              <div className="panel px-6 py-5">
+                <p className="section-kicker inline-flex items-center gap-2">
+                  <Sparkles className="h-3.5 w-3.5" /> Primary action
+                </p>
+                <h2 id="expense-form-heading" className="mt-2 text-xl font-bold text-slate-950 dark:text-white sm:text-2xl">
+                  Add expense
+                </h2>
+                <p className="mt-1 max-w-2xl text-sm text-slate-700 dark:text-slate-400">
+                  Enter the amount first. The form stays above the fold and is the main action on the page.
+                </p>
+              </div>
+
+              <ExpenseForm />
+            </motion.section>
+
+            <motion.div
+              {...cardMotion}
+              transition={{ duration: 0.35, ease: 'easeOut', delay: 0.08 }}
+              id="metrics"
               className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
             >
               <StatTile label="Visible total" value={formatINR(totalAmount)} helper={`${totalCount} item${totalCount === 1 ? '' : 's'}`} />
@@ -198,93 +234,57 @@ export default function Page() {
               <StatTile label="Top category" value={topCategory?.name ?? 'None'} helper={topCategory ? formatINR(topCategory.amount) : 'N/A'} />
             </motion.div>
 
-            {/* Analytics Section */}
-            <motion.div
-              {...cardMotion}
-              transition={{ duration: 0.35, ease: 'easeOut', delay: 0.1 }}
-              id="analytics"
-            >
+            <motion.div {...cardMotion} transition={{ duration: 0.35, ease: 'easeOut', delay: 0.1 }} id="analytics">
               <ExpenseAnalytics monthlySeries={monthlySeries} categorySeries={categorySeries} />
             </motion.div>
 
-            {/* Expense List */}
-            <motion.div
-              {...cardMotion}
-              transition={{ duration: 0.35, ease: 'easeOut', delay: 0.15 }}
-            >
+            <motion.div {...cardMotion} transition={{ duration: 0.35, ease: 'easeOut', delay: 0.12 }} id="list">
               <ExpenseList expenses={visibleExpenses} isLoading={expensesQuery.isLoading} isError={expensesQuery.isError} />
             </motion.div>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6 xl:sticky xl:top-6 xl:self-start">
-            {/* Summary Card */}
-            <motion.div
-              {...cardMotion}
-              transition={{ duration: 0.35, ease: 'easeOut', delay: 0.05 }}
-              id="expense-form"
-            >
+          <aside className="space-y-6 xl:sticky xl:top-6 xl:self-start" aria-label="Dashboard side panel">
+            <motion.div {...cardMotion} transition={{ duration: 0.35, ease: 'easeOut', delay: 0.06 }}>
               <ExpenseSummary totalAmount={totalAmount} itemCount={totalCount} />
             </motion.div>
 
-            {/* Expense Form */}
-            <motion.div
-              {...cardMotion}
-              transition={{ duration: 0.35, ease: 'easeOut', delay: 0.1 }}
-            >
-              <ExpenseForm />
-            </motion.div>
-
-            {/* Filters */}
-            <motion.div
-              {...cardMotion}
-              transition={{ duration: 0.35, ease: 'easeOut', delay: 0.15 }}
-              id="filters"
-            >
+            <motion.div {...cardMotion} transition={{ duration: 0.35, ease: 'easeOut', delay: 0.09 }} id="filters">
               <ExpenseFilters categories={categories} category={category} onCategoryChange={setCategory} sort={sort} onSortChange={setSort} />
             </motion.div>
 
-            {/* Quick Actions */}
-            <motion.section
-              {...cardMotion}
-              transition={{ duration: 0.35, ease: 'easeOut', delay: 0.2 }}
-              className="panel p-5"
-            >
+            <motion.nav {...cardMotion} transition={{ duration: 0.35, ease: 'easeOut', delay: 0.12 }} className="panel p-5" aria-label="Section shortcuts">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="section-kicker inline-flex items-center gap-2">
-                    <Sparkles className="h-3.5 w-3.5" /> Navigation
+                    <Wallet2 className="h-3.5 w-3.5" /> Page map
                   </p>
-                  <h2 className="mt-2 text-lg font-semibold text-slate-950 dark:text-white">Quick links</h2>
-                  <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">Jump to dashboard sections</p>
-                </div>
-                <div className="rounded-xl brand-gradient-bg p-2.5 text-white shadow-lg shadow-purple-600/30">
-                  <ArrowUpRight className="h-4 w-4" />
+                  <h2 className="mt-2 text-lg font-bold text-slate-950 dark:text-white">Jump to a section</h2>
+                  <p className="mt-1 text-xs text-slate-700 dark:text-slate-400">Quick access without crowding the main flow.</p>
                 </div>
               </div>
 
-              <div className="mt-4 grid gap-2.5">
-                {quickActions.map((action) => {
-                  const Icon = action.icon
+              <div className="mt-4 grid gap-2">
+                {sectionNavItems.map((item) => {
+                  const Icon = item.icon
                   return (
                     <a
-                      key={action.label}
-                      href={action.href}
-                      className="group flex items-center justify-between rounded-xl border border-slate-200/60 bg-gradient-to-r from-slate-50 to-slate-50/60 px-3.5 py-2.5 text-xs font-semibold text-slate-700 transition hover:border-purple-300/50 hover:from-white hover:to-white hover:shadow-md dark:border-white/10 dark:from-white/5 dark:to-white/5 dark:text-slate-200 dark:hover:border-purple-400/30 dark:hover:from-white/10 dark:hover:to-white/8 dark:hover:shadow-lg dark:hover:shadow-purple-500/10"
+                      key={item.label}
+                      href={item.href}
+                      className="group flex items-center justify-between rounded-2xl border border-slate-200/70 bg-gradient-to-r from-white to-slate-50/70 px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-purple-300/50 hover:text-purple-700 dark:border-white/10 dark:from-white/5 dark:to-white/5 dark:text-slate-200 dark:hover:border-purple-400/30 dark:hover:text-white"
                     >
-                      <span className="inline-flex items-center gap-2.5">
-                        <span className="rounded-lg bg-purple-600/12 p-1.5 text-purple-600 group-hover:bg-purple-600/20 dark:bg-purple-400/15 dark:text-purple-300">
-                          <Icon className="h-3.5 w-3.5" />
+                      <span className="inline-flex items-center gap-3">
+                        <span className="rounded-xl bg-purple-600/10 p-2 text-purple-600 group-hover:bg-purple-600/20 dark:bg-purple-400/10 dark:text-purple-300">
+                          <Icon className="h-4 w-4" />
                         </span>
-                        {action.label}
+                        {item.label}
                       </span>
-                      <ArrowRight className="h-3.5 w-3.5 text-slate-400 group-hover:translate-x-0.5 dark:text-slate-500" />
+                      <ArrowRight className="h-4 w-4 text-slate-400 transition group-hover:translate-x-0.5 dark:text-slate-500" />
                     </a>
                   )
                 })}
               </div>
-            </motion.section>
-          </div>
+            </motion.nav>
+          </aside>
         </section>
       </div>
       <FloatingNav />

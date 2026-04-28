@@ -14,6 +14,7 @@ import {
   YAxis,
 } from 'recharts'
 import { PieChart, Activity, TrendingUp } from 'lucide-react'
+import { formatINR } from '@/lib/utils'
 
 type MonthlyPoint = {
   label: string
@@ -80,7 +81,7 @@ export default function ExpenseAnalytics({ monthlySeries, categorySeries }: Expe
                     padding: '12px 16px',
                   }}
                   labelStyle={{ color: 'rgba(255,255,255,0.8)' }}
-                  formatter={(value) => [`₹${Number(value).toLocaleString('en-IN')}`, 'Expenses']}
+                  formatter={(value) => [formatINR(Number(value)), 'Expenses']}
                 />
                 <Area type="monotone" dataKey="amount" stroke="#c084fc" strokeWidth={3} fill="url(#expenseArea)" />
               </AreaChart>
@@ -124,7 +125,7 @@ export default function ExpenseAnalytics({ monthlySeries, categorySeries }: Expe
                     boxShadow: '0 24px 60px rgba(0, 0, 0, 0.5)',
                     padding: '12px 16px',
                   }}
-                  formatter={(value) => [`₹${Number(value).toLocaleString('en-IN')}`, 'Category total']}
+                  formatter={(value) => [formatINR(Number(value)), 'Category total']}
                 />
                 <Bar dataKey="amount" radius={[12, 12, 4, 4]} fill="url(#categoryGradient)" />
               </BarChart>
