@@ -303,32 +303,26 @@ body {
   display: none;
 }
 
-.statement-sheet {
+.invoice-sheet {
+  align-items: center;
   color: #111827;
-  font-family: Arial, Helvetica, sans-serif;
-  padding: 32px;
-}
-
-.statement-header {
-  align-items: flex-start;
-  border-bottom: 2px solid #111827;
   display: flex;
-  justify-content: space-between;
-  padding-bottom: 18px;
+  flex-direction: column;
+  font-family: Arial, Helvetica, sans-serif;
+  justify-content: center;
+  min-height: 80vh;
+  padding: 32px;
+  text-align: center;
 }
 
-.statement-header h1 {
-  font-size: 32px;
+.invoice-sheet h1 {
+  color: #111827;
+  font-size: 40px;
   line-height: 1.1;
-  margin: 6px 0;
+  margin: 8px 0;
 }
 
-.statement-header p {
-  color: #475569;
-  margin: 0;
-}
-
-.statement-kicker {
+.invoice-kicker {
   color: #5b21b6 !important;
   font-size: 12px;
   font-weight: 800;
@@ -336,71 +330,33 @@ body {
   text-transform: uppercase;
 }
 
-.statement-logo {
-  align-items: center;
-  background: linear-gradient(135deg, #4f46e5, #7c3aed);
-  border-radius: 16px;
-  color: white;
-  display: flex;
-  font-size: 28px;
-  font-weight: 900;
-  height: 56px;
-  justify-content: center;
-  width: 56px;
-}
-
-.statement-grid {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(4, 1fr);
-  margin: 24px 0;
-}
-
-.statement-grid div {
-  background: #f5f3ff;
-  border: 1px solid #ddd6fe;
-  border-radius: 12px;
-  padding: 14px;
-}
-
-.statement-grid p {
+.invoice-date {
   color: #64748b;
-  font-size: 11px;
+  margin: 0 0 36px;
+}
+
+.invoice-total {
+  border: 2px solid #111827;
+  border-radius: 24px;
+  min-width: 420px;
+  padding: 32px;
+}
+
+.invoice-total span {
+  color: #64748b;
+  display: block;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.12em;
-  margin: 0 0 8px;
+  margin-bottom: 12px;
   text-transform: uppercase;
 }
 
-.statement-grid strong {
+.invoice-total strong {
   color: #111827;
   display: block;
-  font-size: 18px;
-}
-
-.statement-table {
-  border-collapse: collapse;
-  font-size: 12px;
-  width: 100%;
-}
-
-.statement-table th {
-  background: #111827;
-  color: white;
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-align: left;
-  text-transform: uppercase;
-}
-
-.statement-table th,
-.statement-table td {
-  border: 1px solid #cbd5e1;
-  padding: 10px;
-}
-
-.statement-table td {
-  color: #1f2937;
+  font-size: 48px;
+  line-height: 1;
 }
 
 @media print {
@@ -423,7 +379,7 @@ body {
     display: block !important;
   }
 
-  .statement-sheet {
+  .invoice-sheet {
     padding: 0;
   }
 }

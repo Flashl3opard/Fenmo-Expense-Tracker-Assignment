@@ -1,5 +1,14 @@
 export function amountToPaise(amount: number) {
-    return Math.round(amount * 100)
+    if (!Number.isFinite(amount)) {
+        throw new Error('Amount must be a finite number')
+    }
+
+    const paise = Math.round((amount + Number.EPSILON) * 100)
+    if (!Number.isSafeInteger(paise)) {
+        throw new Error('Amount is too large')
+    }
+
+    return paise
 }
 
 export function paiseToAmount(amount: number) {

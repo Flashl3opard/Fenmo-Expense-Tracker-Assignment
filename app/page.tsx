@@ -327,11 +327,7 @@ export default function Page() {
         </section>
       </div>
       <PrintableStatement
-        expenses={visibleExpenses}
         totalAmount={totalAmount}
-        totalCount={totalCount}
-        averageTicket={averageTicket}
-        topCategory={topCategory?.name ?? 'None'}
         statementDate={statementDate}
       />
       <div className="theme-toggle-wrap fixed right-4 top-4 z-50 sm:right-6 sm:top-6">
@@ -343,20 +339,27 @@ export default function Page() {
 }
 
 function PrintableStatement({
-  expenses,
   totalAmount,
-  totalCount,
-  averageTicket,
-  topCategory,
   statementDate,
 }: {
-  expenses: Expense[]
   totalAmount: number
-  totalCount: number
-  averageTicket: number
-  topCategory: string
   statementDate: string
 }) {
+  return (
+    <section className="print-only" aria-label="Printable expense invoice">
+      <div className="invoice-sheet">
+        <p className="invoice-kicker">Fenmo Expense OS</p>
+        <h1>Expense Invoice</h1>
+        <p className="invoice-date">{statementDate}</p>
+        <div className="invoice-total">
+          <span>Total Amount</span>
+          <strong>{formatINR(totalAmount)}</strong>
+        </div>
+      </div>
+    </section>
+  )
+}
+/*
   return (
     <section className="print-only" aria-label="Printable expense statement">
       <div className="statement-sheet">
@@ -416,6 +419,7 @@ function StatementMetric({ label, value }: { label: string; value: string }) {
   )
 }
 
+*/
 function MiniMetric({
   label,
   value,
