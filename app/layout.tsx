@@ -1,24 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: {
     default: "Fenmo Expense OS",
     template: "%s | Fenmo Expense OS",
   },
-  description: "A premium fintech dashboard for tracking personal spending with clarity.",
+  description:
+    "A premium fintech dashboard for tracking personal spending with clarity.",
   applicationName: "Fenmo Expense OS",
   appleWebApp: {
     title: "Fenmo",
@@ -42,10 +32,14 @@ export const viewport: Viewport = {
 
 const themeScript = `
   try {
-    var savedTheme = localStorage.getItem('theme');
-    document.documentElement.classList.toggle('dark', savedTheme !== 'light');
+    var savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") {
+      document.documentElement.classList.remove("dark");
+    } else {
+      document.documentElement.classList.add("dark");
+    }
   } catch (_) {
-    document.documentElement.classList.add('dark');
+    document.documentElement.classList.add("dark");
   }
 `;
 
@@ -57,7 +51,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased`}
+      className="dark h-full antialiased"
       suppressHydrationWarning
     >
       <head>
