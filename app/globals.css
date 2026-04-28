@@ -2,9 +2,13 @@
 
 :root {
   color-scheme: light;
-  --background: #f8fafc;
+  --background: #edf2ff;
   --foreground: #0f172a;
   --muted: #64748b;
+  --panel: rgba(255, 255, 255, 0.8);
+  --panel-border: rgba(15, 23, 42, 0.08);
+  --panel-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+  --panel-dark: linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.92));
 }
 
 .dark {
@@ -12,6 +16,10 @@
   --background: #020617;
   --foreground: #f8fafc;
   --muted: #94a3b8;
+  --panel: rgba(15, 23, 42, 0.7);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --panel-shadow: 0 24px 60px rgba(0, 0, 0, 0.36);
+  --panel-dark: linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.92));
 }
 
 @theme inline {
@@ -23,12 +31,16 @@
 
 html {
   min-height: 100%;
-  background: var(--background);
+  background:
+    radial-gradient(circle at top left, rgba(139, 92, 246, 0.18), transparent 28%),
+    radial-gradient(circle at top right, rgba(20, 184, 166, 0.16), transparent 24%),
+    radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.08), transparent 26%),
+    var(--background);
 }
 
 body {
   min-height: 100vh;
-  background: var(--background);
+  background: transparent;
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
@@ -56,4 +68,42 @@ body {
 
 .input::placeholder {
   color: var(--muted);
+}
+
+.panel {
+  border-radius: 1.75rem;
+  border: 1px solid var(--panel-border);
+  background: var(--panel);
+  box-shadow: var(--panel-shadow);
+  backdrop-filter: blur(18px);
+}
+
+.panel-dark {
+  border-radius: 1.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--panel-dark);
+  color: white;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.34);
+  backdrop-filter: blur(18px);
+}
+
+.section-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #7c3aed;
+}
+
+.dark .section-kicker {
+  color: rgba(196, 181, 253, 0.95);
+}
+
+.glass-btn {
+  border: 1px solid color-mix(in srgb, var(--foreground) 10%, transparent);
+  background: color-mix(in srgb, var(--panel) 96%, white);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
 }
