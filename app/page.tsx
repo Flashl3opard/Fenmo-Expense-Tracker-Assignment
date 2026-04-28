@@ -8,7 +8,6 @@ import {
   ArrowRight,
   ArrowUpRight,
   CalendarDays,
-  Filter,
   LayoutDashboard,
   Plus,
   RefreshCcw,
@@ -16,11 +15,13 @@ import {
   TrendingUp,
   Wallet2,
 } from 'lucide-react'
+import FloatingNav from '@/components/FloatingNav'
 import ExpenseAnalytics from '@/components/ExpenseAnalytics'
 import ExpenseFilters from '@/components/ExpenseFilters'
 import ExpenseForm from '@/components/ExpenseForm'
 import ExpenseList from '@/components/ExpenseList'
 import ExpenseSummary from '@/components/ExpenseSummary'
+import ThemeToggle from '@/components/ThemeToggle'
 
 type Expense = {
   id: string
@@ -147,102 +148,137 @@ export default function Page() {
   const monthTotal = monthlySeries[monthlySeries.length - 1]?.amount ?? 0
 
   return (
-    <main className="min-h-screen px-4 py-5 text-slate-950 dark:text-white sm:px-6 lg:px-8">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
-        <motion.header {...cardMotion} className="panel overflow-hidden p-5 sm:p-6">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-            <div className="flex items-start gap-4">
-              <div className="rounded-[1.4rem] bg-gradient-to-br from-violet-600 via-indigo-600 to-cyan-500 p-3 text-white shadow-xl shadow-violet-600/25">
-                <Wallet2 className="h-6 w-6" />
+    <main id="top" className="bottom-safe-area min-h-screen px-4 py-5 sm:px-6 lg:px-8">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
+        {/* Premium Header */}
+        <motion.header {...cardMotion} className="panel relative overflow-hidden p-5 sm:p-8">
+          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-r from-purple-500/15 via-violet-400/10 to-indigo-500/15" />
+          <div className="relative">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+              <div className="flex items-start gap-4">
+                <div className="rounded-2xl brand-gradient-bg p-3 text-white shadow-xl shadow-purple-600/30">
+                  <Wallet2 className="h-6 w-6" />
+                </div>
+                <div className="max-w-2xl">
+                  <p className="section-kicker">Expense control center</p>
+                  <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-4xl">
+                    Premium Expense Tracker
+                  </h1>
+                  <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300 sm:text-base">
+                    Track, analyze, and manage your spending with a fintech-grade dashboard designed for precision and elegance.
+                  </p>
+                </div>
               </div>
-              <div className="max-w-2xl">
-                <p className="section-kicker">Expense control center</p>
-                <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-                  A premium fintech dashboard for everyday spending.
-                </h1>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-400 sm:text-base">
-                  Track expenses, inspect trends, and filter what matters with a polished wallet-style interface designed to feel investor-demo ready.
-                </p>
+
+              <div className="flex-shrink-0">
+                <ThemeToggle />
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => {
-                const isDark = document.documentElement.classList.toggle('dark')
-                window.localStorage.setItem('theme', isDark ? 'dark' : 'light')
-              }}
-              className="glass-btn inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:-translate-y-0.5 hover:shadow-lg dark:text-slate-200"
-            >
-              <Sparkles className="h-4 w-4 text-violet-500" />
-              Toggle theme
-            </button>
-          </div>
-
-          <div className="mt-6 grid gap-3 sm:grid-cols-3">
-            <MiniMetric label="Visible expenses" value={formatINR(totalAmount)} icon={LayoutDashboard} accent="from-violet-600 to-indigo-600" />
-            <MiniMetric label="This month" value={formatINR(monthTotal)} icon={CalendarDays} accent="from-cyan-500 to-teal-500" />
-            <MiniMetric label="Top category" value={topCategory?.name ?? '—'} icon={TrendingUp} accent="from-emerald-500 to-lime-500" />
+            <div className="mt-7 grid gap-3 sm:grid-cols-3">
+              <MiniMetric label="Visible total" value={formatINR(totalAmount)} icon={LayoutDashboard} accent="from-violet-700 via-purple-600 to-indigo-700" />
+              <MiniMetric label="This month" value={formatINR(monthTotal)} icon={CalendarDays} accent="from-purple-600 via-pink-500 to-red-600" />
+              <MiniMetric label="Top category" value={topCategory?.name ?? '—'} icon={TrendingUp} accent="from-indigo-600 via-purple-500 to-violet-600" />
+            </div>
           </div>
         </motion.header>
 
-        <section className="grid gap-6 xl:grid-cols-[1.3fr_0.9fr]">
-          <div className="space-y-6">
-            <motion.div {...cardMotion} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {/* Main Content Grid */}
+        <section className="grid gap-8 xl:grid-cols-[1fr_320px]">
+          <div className="space-y-8">
+            {/* Premium Stats Row */}
+            <motion.div
+              {...cardMotion}
+              transition={{ duration: 0.35, ease: 'easeOut', delay: 0.05 }}
+              className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+            >
               <StatTile label="Visible total" value={formatINR(totalAmount)} helper={`${totalCount} item${totalCount === 1 ? '' : 's'}`} />
-              <StatTile label="Average ticket" value={formatINR(averageTicket)} helper="Across the filtered set" />
-              <StatTile label="This month" value={formatINR(monthTotal)} helper="From all recorded expenses" />
-              <StatTile label="Top category" value={topCategory?.name ?? 'None'} helper={topCategory ? formatINR(topCategory.amount) : 'No spend yet'} />
+              <StatTile label="Average ticket" value={formatINR(averageTicket)} helper="Per expense" />
+              <StatTile label="This month" value={formatINR(monthTotal)} helper="All expenses" />
+              <StatTile label="Top category" value={topCategory?.name ?? 'None'} helper={topCategory ? formatINR(topCategory.amount) : 'N/A'} />
             </motion.div>
 
-            <div id="analytics">
+            {/* Analytics Section */}
+            <motion.div
+              {...cardMotion}
+              transition={{ duration: 0.35, ease: 'easeOut', delay: 0.1 }}
+              id="analytics"
+            >
               <ExpenseAnalytics monthlySeries={monthlySeries} categorySeries={categorySeries} />
-            </div>
+            </motion.div>
 
-            <ExpenseList expenses={visibleExpenses} isLoading={expensesQuery.isLoading} isError={expensesQuery.isError} />
+            {/* Expense List */}
+            <motion.div
+              {...cardMotion}
+              transition={{ duration: 0.35, ease: 'easeOut', delay: 0.15 }}
+            >
+              <ExpenseList expenses={visibleExpenses} isLoading={expensesQuery.isLoading} isError={expensesQuery.isError} />
+            </motion.div>
           </div>
 
+          {/* Sidebar */}
           <div className="space-y-6 xl:sticky xl:top-6 xl:self-start">
-            <div id="expense-form">
+            {/* Summary Card */}
+            <motion.div
+              {...cardMotion}
+              transition={{ duration: 0.35, ease: 'easeOut', delay: 0.05 }}
+              id="expense-form"
+            >
               <ExpenseSummary totalAmount={totalAmount} itemCount={totalCount} />
-            </div>
+            </motion.div>
 
-            <ExpenseForm />
+            {/* Expense Form */}
+            <motion.div
+              {...cardMotion}
+              transition={{ duration: 0.35, ease: 'easeOut', delay: 0.1 }}
+            >
+              <ExpenseForm />
+            </motion.div>
 
-            <div id="filters">
+            {/* Filters */}
+            <motion.div
+              {...cardMotion}
+              transition={{ duration: 0.35, ease: 'easeOut', delay: 0.15 }}
+              id="filters"
+            >
               <ExpenseFilters categories={categories} category={category} onCategoryChange={setCategory} sort={sort} onSortChange={setSort} />
-            </div>
+            </motion.div>
 
-            <motion.section {...cardMotion} className="panel p-5">
+            {/* Quick Actions */}
+            <motion.section
+              {...cardMotion}
+              transition={{ duration: 0.35, ease: 'easeOut', delay: 0.2 }}
+              className="panel p-5"
+            >
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="section-kicker inline-flex items-center gap-2">
-                    <Filter className="h-3.5 w-3.5" /> Quick actions
+                    <Sparkles className="h-3.5 w-3.5" /> Navigation
                   </p>
-                  <h2 className="mt-2 text-xl font-semibold text-slate-950 dark:text-white">Focus mode</h2>
-                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Navigate the dashboard without leaving the product flow.</p>
+                  <h2 className="mt-2 text-lg font-semibold text-slate-950 dark:text-white">Quick links</h2>
+                  <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">Jump to dashboard sections</p>
                 </div>
-                <div className="rounded-2xl bg-gradient-to-br from-violet-500 to-cyan-500 p-3 text-white shadow-lg shadow-violet-500/25">
-                  <ArrowUpRight className="h-5 w-5" />
+                <div className="rounded-xl brand-gradient-bg p-2.5 text-white shadow-lg shadow-purple-600/30">
+                  <ArrowUpRight className="h-4 w-4" />
                 </div>
               </div>
 
-              <div className="mt-5 grid gap-3">
+              <div className="mt-4 grid gap-2.5">
                 {quickActions.map((action) => {
                   const Icon = action.icon
                   return (
                     <a
                       key={action.label}
                       href={action.href}
-                      className="flex items-center justify-between rounded-2xl border border-black/10 bg-white/70 px-4 py-3 text-sm font-medium text-slate-700 transition hover:-translate-y-0.5 hover:border-violet-300/40 hover:bg-white hover:shadow-lg dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
+                      className="group flex items-center justify-between rounded-xl border border-slate-200/60 bg-gradient-to-r from-slate-50 to-slate-50/60 px-3.5 py-2.5 text-xs font-semibold text-slate-700 transition hover:border-purple-300/50 hover:from-white hover:to-white hover:shadow-md dark:border-white/10 dark:from-white/5 dark:to-white/5 dark:text-slate-200 dark:hover:border-purple-400/30 dark:hover:from-white/10 dark:hover:to-white/8 dark:hover:shadow-lg dark:hover:shadow-purple-500/10"
                     >
-                      <span className="inline-flex items-center gap-3">
-                        <span className="rounded-xl bg-violet-600/10 p-2 text-violet-600 dark:bg-violet-400/10 dark:text-violet-300">
-                          <Icon className="h-4 w-4" />
+                      <span className="inline-flex items-center gap-2.5">
+                        <span className="rounded-lg bg-purple-600/12 p-1.5 text-purple-600 group-hover:bg-purple-600/20 dark:bg-purple-400/15 dark:text-purple-300">
+                          <Icon className="h-3.5 w-3.5" />
                         </span>
                         {action.label}
                       </span>
-                      <ArrowRight className="h-4 w-4 text-slate-400" />
+                      <ArrowRight className="h-3.5 w-3.5 text-slate-400 group-hover:translate-x-0.5 dark:text-slate-500" />
                     </a>
                   )
                 })}
@@ -251,6 +287,7 @@ export default function Page() {
           </div>
         </section>
       </div>
+      <FloatingNav />
     </main>
   )
 }
@@ -267,22 +304,22 @@ function MiniMetric({
   accent: string
 }) {
   return (
-    <div className="rounded-3xl border border-black/5 bg-white/75 p-4 shadow-sm shadow-black/5 backdrop-blur dark:border-white/10 dark:bg-white/5">
-      <div className={`inline-flex rounded-2xl bg-gradient-to-br ${accent} p-2 text-white shadow-lg shadow-black/10`}>
+    <div className="group rounded-2xl border border-black/8 bg-gradient-to-br from-white to-slate-50/60 p-4 shadow-sm transition hover:shadow-md dark:border-white/12 dark:from-white/8 dark:to-white/5 dark:hover:border-purple-400/20">
+      <div className={`inline-flex rounded-xl bg-gradient-to-br ${accent} p-2 text-white shadow-lg shadow-black/20`}>
         <Icon className="h-4 w-4" />
       </div>
-      <p className="mt-4 text-xs font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">{label}</p>
-      <p className="mt-2 text-lg font-semibold tracking-tight text-slate-950 dark:text-white">{value}</p>
+      <p className="mt-3 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{label}</p>
+      <p className="mt-2 text-xl font-bold tracking-tight text-slate-950 dark:text-white">{value}</p>
     </div>
   )
 }
 
 function StatTile({ label, value, helper }: { label: string; value: string; helper: string }) {
   return (
-    <div className="rounded-3xl border border-black/5 bg-white/75 p-4 shadow-sm shadow-black/5 backdrop-blur dark:border-white/10 dark:bg-white/5">
-      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">{label}</p>
-      <p className="mt-3 text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">{value}</p>
-      <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{helper}</p>
+    <div className="group rounded-2xl border border-black/8 bg-gradient-to-br from-white to-slate-50/50 p-4 shadow-sm transition hover:shadow-md dark:border-white/12 dark:from-white/8 dark:to-white/5 dark:hover:border-purple-400/20">
+      <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{label}</p>
+      <p className="mt-3 text-2xl font-bold tracking-tighter text-slate-950 dark:text-white">{value}</p>
+      <p className="mt-2 text-xs text-slate-600 dark:text-slate-400">{helper}</p>
     </div>
   )
 }

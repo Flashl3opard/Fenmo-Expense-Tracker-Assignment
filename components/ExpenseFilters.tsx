@@ -1,5 +1,6 @@
 "use client"
 
+import { motion } from 'framer-motion'
 import { Filter, RotateCcw } from 'lucide-react'
 
 type ExpenseFiltersProps = {
@@ -12,31 +13,38 @@ type ExpenseFiltersProps = {
 
 export default function ExpenseFilters({ categories, category, onCategoryChange, sort, onSortChange }: ExpenseFiltersProps) {
   return (
-    <div className="panel p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+    <motion.div
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+      className="panel p-5"
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/40 pb-4 dark:border-white/10">
         <div>
           <p className="section-kicker inline-flex items-center gap-2">
             <Filter className="h-3.5 w-3.5" /> Filter and sort
           </p>
-          <h2 className="mt-2 text-xl font-semibold text-slate-950 dark:text-white">Refine your view</h2>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Switch category scope and keep newest expenses on top.</p>
+          <h2 className="mt-2 text-lg font-bold text-slate-950 dark:text-white">Refine your view</h2>
+          <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">Switch category scope and keep newest expenses on top.</p>
         </div>
 
-        <button
+        <motion.button
           type="button"
           onClick={() => {
             onCategoryChange('')
             onSortChange('date_desc')
           }}
-          className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-white/10 dark:bg-white/10 dark:text-slate-200 dark:hover:bg-white/15"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="inline-flex items-center gap-2 rounded-lg border border-slate-200/60 bg-gradient-to-r from-slate-50 to-slate-50/60 px-3.5 py-2 text-xs font-semibold text-slate-700 transition hover:border-purple-300/50 hover:from-white hover:to-white dark:border-white/10 dark:from-white/5 dark:to-white/5 dark:text-slate-200 dark:hover:border-purple-400/30 dark:hover:from-white/10 dark:hover:to-white/8"
         >
-          <RotateCcw className="h-4 w-4" /> Reset
-        </button>
+          <RotateCcw className="h-3.5 w-3.5" /> Reset
+        </motion.button>
       </div>
 
-      <div className="mt-5 grid gap-4 md:grid-cols-[minmax(0,1fr)_220px]">
+      <div className="mt-5 grid gap-4 md:grid-cols-[minmax(0,1fr)_200px]">
         <label>
-          <span className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Category filter</span>
+          <span className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Category filter</span>
           <select className="input" value={category} onChange={(event) => onCategoryChange(event.target.value)}>
             <option value="">All categories</option>
             {categories.map((value) => (
@@ -47,41 +55,45 @@ export default function ExpenseFilters({ categories, category, onCategoryChange,
           </select>
 
           <div className="mt-3 flex flex-wrap gap-2">
-            <button
+            <motion.button
               type="button"
               onClick={() => onCategoryChange('')}
-              className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
                 category === ''
-                  ? 'bg-violet-600 text-white shadow-md shadow-violet-600/25'
-                  : 'border border-black/10 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10'
+                  ? 'brand-gradient-bg text-white shadow-lg shadow-purple-600/25'
+                  : 'border border-slate-200/60 bg-gradient-to-r from-slate-50 to-slate-50/60 text-slate-600 hover:border-purple-300/50 hover:from-purple-50 hover:to-purple-50/50 dark:border-white/10 dark:from-white/5 dark:to-white/5 dark:text-slate-300 dark:hover:border-purple-400/30 dark:hover:from-white/10 dark:hover:to-white/8'
               }`}
             >
               All
-            </button>
+            </motion.button>
             {categories.slice(0, 4).map((value) => (
-              <button
+              <motion.button
                 key={value}
                 type="button"
                 onClick={() => onCategoryChange(value)}
-                className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
                   category === value
-                    ? 'bg-violet-600 text-white shadow-md shadow-violet-600/25'
-                    : 'border border-black/10 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10'
+                    ? 'brand-gradient-bg text-white shadow-lg shadow-purple-600/25'
+                    : 'border border-slate-200/60 bg-gradient-to-r from-slate-50 to-slate-50/60 text-slate-600 hover:border-purple-300/50 hover:from-purple-50 hover:to-purple-50/50 dark:border-white/10 dark:from-white/5 dark:to-white/5 dark:text-slate-300 dark:hover:border-purple-400/30 dark:hover:from-white/10 dark:hover:to-white/8'
                 }`}
               >
                 {value}
-              </button>
+              </motion.button>
             ))}
           </div>
         </label>
 
         <label>
-          <span className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Sort</span>
+          <span className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Sort</span>
           <select className="input" value={sort} onChange={(event) => onSortChange(event.target.value as 'date_desc')}>
             <option value="date_desc">Newest first</option>
           </select>
         </label>
       </div>
-    </div>
+    </motion.div>
   )
 }
