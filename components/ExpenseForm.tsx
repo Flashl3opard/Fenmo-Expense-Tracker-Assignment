@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from 'react'
+import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -16,7 +16,7 @@ type ExpenseFormProps = {
 
 export default function ExpenseForm({ onCreated }: ExpenseFormProps) {
   const queryClient = useQueryClient()
-  const idempotencyKeyRef = useRef<string>(uuidv4())
+  const [idempotencyKey, setIdempotencyKey] = useState<string>(() => uuidv4())
 
   const form = useForm<ExpenseFormValues>({
     resolver: zodResolver(ExpenseCreateSchema),
@@ -25,7 +25,7 @@ export default function ExpenseForm({ onCreated }: ExpenseFormProps) {
       category: '',
       description: '',
       date: '',
-      idempotencyKey: idempotencyKeyRef.current,
+      idempotencyKey,
     },
   })
 
@@ -46,14 +46,15 @@ export default function ExpenseForm({ onCreated }: ExpenseFormProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['expenses'] })
+      const nextKey = uuidv4()
+      setIdempotencyKey(nextKey)
       form.reset({
         amount: 0,
         category: '',
         description: '',
         date: '',
-        idempotencyKey: uuidv4(),
+        idempotencyKey: nextKey,
       })
-      idempotencyKeyRef.current = uuidv4()
       onCreated?.()
     },
   })
@@ -61,13 +62,9 @@ export default function ExpenseForm({ onCreated }: ExpenseFormProps) {
   const submit = form.handleSubmit((values) => {
     mutation.mutate({
       ...values,
-      idempotencyKey: idempotencyKeyRef.current,
+      idempotencyKey,
     })
   })
-
-  useEffect(() => {
-    form.setValue('idempotencyKey', idempotencyKeyRef.current)
-  }, [form])
 
   return (
     <form onSubmit={submit} className="rounded-3xl border border-black/5 bg-white p-5 shadow-sm shadow-black/5 dark:border-white/10 dark:bg-white/5">
@@ -86,22 +83,22 @@ export default function ExpenseForm({ onCreated }: ExpenseFormProps) {
             placeholder="0.00"
             {...form.register('amount', { valueAsNumber: true })}
           />
-          <Error message={form.formState.errors.amount?.message} />
+          <FieldError message={form.formState.errors.amount?.message} />
         </Field>
 
         <Field label="Category">
           <input className="input" placeholder="Food" {...form.register('category')} />
-          <Error message={form.formState.errors.category?.message} />
+          <FieldError message={form.formState.errors.category?.message} />
         </Field>
 
         <Field label="Description" full>
           <input className="input" placeholder="Lunch with team" {...form.register('description')} />
-          <Error message={form.formState.errors.description?.message} />
+          <FieldError message={form.formState.errors.description?.message} />
         </Field>
 
         <Field label="Date">
           <input type="date" className="input" {...form.register('date')} />
-          <Error message={form.formState.errors.date?.message} />
+          <FieldError message={form.formState.errors.date?.message} />
         </Field>
       </div>
 
@@ -128,7 +125,7 @@ function Field({ label, children, full = false }: { label: string; children: Rea
   )
 }
 
-function Error({ message }: { message?: string }) {
+function FieldError({ message }: { message?: string }) {
   if (!message) return null
   return <p className="mt-1 text-xs text-rose-600 dark:text-rose-400">{message}</p>
 }
