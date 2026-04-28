@@ -1,3 +1,63 @@
+"use client"
+
+import React, { useState } from 'react'
+import ExpenseForm from '../components/ExpenseForm'
+import ExpenseList from '../components/ExpenseList'
+import ExpenseFilters from '../components/ExpenseFilters'
+import ExpenseSummary from '../components/ExpenseSummary'
+import { useQuery } from '@tanstack/react-query'
+
+export default function Page() {
+  const [category, setCategory] = useState<string | null>(null)
+  const [sort, setSort] = useState<string | null>('date_desc')
+
+  // Fetch visible expenses to compute total
+  const { data: visible = [] } = useQuery(['expenses', category, sort], async () => {
+    const params = new URLSearchParams()
+    if (category) params.set('category', category)
+    if (sort) params.set('sort', sort)
+    const res = await fetch('/api/expenses?' + params.toString())
+    if (!res.ok) throw new Error('Failed')
+    return res.json()
+  })
+
+  const total = (visible || []).reduce((sum: number, e: any) => sum + (e.amount ?? 0), 0)
+
+  return (
+    <div className="min-h-screen p-6 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+      <div className="max-w-4xl mx-auto">
+        <header className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-semibold">Expense Tracker</h1>
+          <ThemeToggle />
+        </header>
+
+        <section className="grid md:grid-cols-2 gap-4 mb-6">
+          <ExpenseForm />
+          <ExpenseSummary totalCents={total} />
+        </section>
+
+        <section className="mb-4 flex items-center justify-between">
+          <ExpenseFilters selectedCategory={category} setSelectedCategory={setCategory} sort={sort} setSort={setSort} />
+        </section>
+
+        <ExpenseList category={category ?? undefined} sort={sort ?? undefined} />
+      </div>
+    </div>
+  )
+}
+
+function ThemeToggle() {
+  const [mode, setMode] = useState<'light' | 'dark'>(() => (typeof window !== 'undefined' && localStorage.getItem('theme') === 'dark' ? 'dark' : 'light'))
+  React.useEffect(() => {
+    document.documentElement.classList.toggle('dark', mode === 'dark')
+    localStorage.setItem('theme', mode)
+  }, [mode])
+  return (
+    <button onClick={() => setMode((m) => (m === 'dark' ? 'light' : 'dark'))} className="px-3 py-1 border rounded">
+      {mode === 'dark' ? '🌙 Dark' : '☀️ Light'}
+    </button>
+  )
+}
 import Image from "next/image";
 
 export default function Home() {
